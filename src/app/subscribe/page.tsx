@@ -50,7 +50,7 @@ export default function SubscribePage() {
           <div className="relative">
             <div className=" rounded-2xl">
               <div className="rounded-2xl bg-black border border-white/20 shadow-lg">
-                <div className="p-3 md:p-6">
+                <div className="p-3 md:p-6 relative z-10">
                   <PricingTable />
                 </div>
               </div>
