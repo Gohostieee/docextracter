@@ -22,7 +22,7 @@ program
   .command('extract <url>')
   .description('Extract documentation from a URL')
   .option('-o, --output <path>', 'Output directory path (relative to current directory)', './docs')
-  .option('-s, --server <url>', 'Server URL', 'http://localhost:3000/api')
+  .option('-s, --server <url>', 'Server URL', 'https://docextract.webv1.com/api')
   .action(async (url, options) => {
     try {
       console.log(chalk.blue.bold('\n📚 DocExtractor\n'));
@@ -123,7 +123,7 @@ program
 program
   .command('login')
   .description('Authenticate with DocExtract')
-  .option('-s, --server <url>', 'Server URL', 'http://localhost:3000')
+  .option('-s, --server <url>', 'Server URL', 'https://docextract.webv1.com')
   .action(async (options) => {
     try {
       const serverUrl = getServerUrl(options);

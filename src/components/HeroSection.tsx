@@ -94,7 +94,7 @@ export function HeroSection({ isSignedIn, hasSubscription }: HeroSectionProps) {
             <SignInButton mode="modal">
               <Button
                 variant="outline"
-                className="border-[#b08968]/40 text-[#f4ede1] hover:bg-[#b08968]/20 hover:border-[#b08968]/60"
+                className="border-[#b08968]/40 hover:text-[#f4ede1] text-[#0e0d0b] hover:bg-[#b08968]/20 hover:border-[#b08968]/60"
               >
                 Sign In
               </Button>

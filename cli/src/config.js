@@ -36,7 +36,7 @@ export function loadConfig() {
   } catch (error) {
     console.error('Error loading config:', error);
     return {
-      serverUrl: 'http://localhost:3000',
+      serverUrl: 'https://docextract.webv1.com',
       apiEndpoint: '/api',
       callbackPort: 8765,
       timeout: 600000,
@@ -89,6 +89,6 @@ export function getServerUrl(options = {}) {
     options.server ||
     process.env.DOCEXTRACT_SERVER_URL ||
     getConfigValue('serverUrl') ||
-    'http://localhost:3000'
+    'https://docextract.webv1.com'
   );
 }

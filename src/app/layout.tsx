@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-  metadataBase: new URL("https://docextracter.local"),
+  metadataBase: new URL("https://docextract.webv1.com"),
   openGraph: {
     title: "DocExtracter — AI Docs from Any URL",
     description:

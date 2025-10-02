@@ -21,13 +21,24 @@ export function Navbar() {
         <div className="bg-black/40 backdrop-blur-2xl border border-white/10 rounded-2xl px-6 py-3 shadow-2xl">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-gradient-to-br from-[#b08968]/20 to-[#7f8c5a]/20 border border-white/10 rounded-lg">
-                <Sparkles className="w-5 h-5 text-[#c97a63]" />
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-gradient-to-br from-[#b08968]/20 to-[#7f8c5a]/20 border border-white/10 rounded-lg">
+                  <Sparkles className="w-5 h-5 text-[#c97a63]" />
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-[#f4ede1] to-[#d1bfa7] bg-clip-text text-transparent">
+                  DocExtract
+                </span>
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-[#f4ede1] to-[#d1bfa7] bg-clip-text text-transparent">
-                DocExtract
-              </span>
+
+              {/* Nav Links */}
+              <Button
+                variant="ghost"
+                onClick={() => router.push('/cli')}
+                className="text-gray-300 hover:text-white hover:bg-white/10 hidden sm:flex"
+              >
+                CLI
+              </Button>
             </div>
 
             {/* Auth Buttons */}

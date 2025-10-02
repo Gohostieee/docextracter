@@ -157,7 +157,7 @@ function startCallbackServer(port = 8765) {
  * Login command - opens browser for OAuth-style authentication
  * @param {string} serverUrl - The server URL
  */
-export async function login(serverUrl = 'http://localhost:3000') {
+export async function login(serverUrl = 'https://docextract.webv1.com') {
   console.log(chalk.blue.bold('\n🔐 DocExtract CLI Authentication\n'));
 
   const config = loadConfig();
