@@ -134,7 +134,7 @@ export function HeroSection({ isSignedIn, hasSubscription }: HeroSectionProps) {
             <Button
               onClick={() => window.location.href = '/settings'}
               variant="outline"
-              className="border-[#b08968]/40 text-[#f4ede1] hover:bg-[#b08968]/20 hover:border-[#b08968]/60"
+              className="border-[#b08968]/40 hover:text-[#f4ede1] hover:bg-[#b08968]/20 hover:border-[#b08968]/60"
             >
               Add API Key
             </Button>
