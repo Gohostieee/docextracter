@@ -1,0 +1,72 @@
+# Teams Roles - Vast.ai Documentation – Affordable GPU Cloud Marketplace
+
+**URL:** https://docs.vast.ai/teams-roles
+
+---
+
+## What Are Team Roles?
+
+Team roles in Vast.ai’s platform are designed to streamline collaboration and enhance security by assigning specific permissions and access levels to different members of a team. These roles determine what actions a team member can perform and what data they can access within the team’s shared workspace/context.
+
+### Types of Team Roles
+
+1.  **Default Roles**: These are the standard roles with preset permissions, suitable for common team structures:
+    *   _Owner_: Full access to all team resources, settings, and member management.
+    *   _Manager_: All permissions of Team Owner apart from Team Deletion.
+    *   _Member_: Has ability to view, create, and interact with instances, but no access to billing info, team management, autoscaler, machines, etc.
+2.  **Custom Roles**: Custom roles allow team managers to create roles with custom, tailored permissions via permission groups. This feature is particularly useful for teams with unique workflow requirements or specific security protocols.
+
+For more information on Permission Groups and what they allow access to, [click here](https://docs.vast.ai/api-reference/permissions-and-authorization).
+
+### Creating Custom Roles
+
+*   **Accessing Role Management**: Custom roles can be created and managed through the **Roles** tab of the **Members** Page on the Vast.ai platform.
+*   **Defining Permissions**: When creating a custom role, you can select from a wide range of read/write permissions, such as instance creation, billing access, etc. This allows for precise control over what each role can and cannot do.
+*   **Assigning Custom Roles**: Once a custom role is created, it can be assigned to team members through the team management interface.
+
+You can create roles either in the Vast CLI or on your team dashbaord if you have permission to create roles within your team (team\_write).
+
+You can easily edit any roles on your team using the team dashboard. When editing a role you should see the same series of checkboxes and categories as before.
+
+### Role Syntax
+
+All team roles are created through the team dashboard using the role editor. You can also create roles through the Vast CLI by passing in a permissions JSON object that delegates what group of endpoints can be accessed. Currently, the system only supports groups of endpoint categories, but soon it will be extended for further granularity. The current activated scopes are as follows
+
+*   **misc**: Supports uncategorized operations like search offers, getting logs from various sources, etc
+*   **user\_read**: Allows the usage of obtaining basic user data like email, credits, etc. Essential for web usage.
+*   **user\_write**: Allows the ability to change account settings such as email, password, 2FA, etc.
+*   **instance\_read**: Grants ability to view instances, and certain read-only instance operations
+*   **instance\_write**: Grants access to instances and all relevant operations such as starting/stopping instances, cloud copy, reserving credits, etc
+*   **billing\_read**: Ability to view billing page and get billing information
+*   **billing\_write**: Ability to change billing page information
+*   **machine\_read**: Read access to machines owned by the team
+*   **machine\_write**: Ability to add/remove machines, and also edit machine settings
+
+An example of a permissions json would look like this:
+
+Text
+
+```
+{
+    "api": {
+        "misc": {}, 
+        "user_read":{}, 
+        "instance_read": {}, 
+        "instance_write": {},
+        "team_read": {
+            "api.team.members": {}
+        }
+    }
+}
+```
+
+In order to create a granular team roles you must either use the CLI or the API. In the above example, the only API under team\_read that the user would have access to would be viewing the list of team members. For more information on Permissions [click here](https://docs.vast.ai/api-reference/permissions-and-authorization).
+
+### Best Practices for Using Team Roles
+
+*   **Clear Role Definitions**: Clearly define the responsibilities and permissions for each role to avoid confusion and ensure effective collaboration.
+*   **Use Custom Roles Judiciously**: Create custom roles when predefined roles do not meet your specific needs. Be mindful of the permissions assigned to ensure team security and efficiency.
+
+### Conclusion
+
+Team roles are a fundamental aspect of managing a secure environment for collaboration on the Vast.ai platform. By effectively utilizing predefined and custom roles, teams can ensure that each member has the appropriate level of access and control, fostering a productive and secure working environment.

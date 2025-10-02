@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.browserbase.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.stagehand.dev)",
+      "Bash(pnpm add:*)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:magicui.design)",
+      "Bash(npm run build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

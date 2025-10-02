@@ -1,0 +1,130 @@
+# Volumes - Vast.ai Documentation – Affordable GPU Cloud Marketplace
+
+**URL:** https://docs.vast.ai/volumes
+
+---
+
+The [**Storage**](https://cloud.vast.ai/storage/) page allows you to easily access and manage your **volumes -** storage that can be attached to your instances for data storage. We currently provide **local volumes only**, meaning:
+
+*   A volume is physically tied to the machine it was created on.
+*   It can only be attached to instances running on the same physical machine.
+*   It cannot be moved or attached to instances on other machines.
+
+## Creating a Volume in GUI
+
+This guide will walk you through the process of creating a volume using a template in the GUI. You can create the volume during instance creation by using a template with volume settings enabled, or you can create a volume by using dropdown menu on the Search page.
+
+1.  Select a template then click on **Add volume** dropdown. You will see an option labeled **Local volume** with a + (plus) button next to it. ![](https://mintcdn.com/vastai-80aa3a82/1a9mKbP8zn3lYY0d/images/volumes.webp?fit=max&auto=format&n=1a9mKbP8zn3lYY0d&q=85&s=d818347fcfa8ee7b670e80b32ac995fe)
+2.  Click + button. This will allow you to adjust the volume size using the slider. Once enabled, offes will display the available volume size.
+3.  Click **Rent** button to launch your instance along with the volume. Once the instance is running, your volume will be automatically mounted and available inside the container at the /data directory.
+4.  You can find your volume information on **Storage** page.
+
+### **How to create a volume using a template?**
+
+1.  Choose a Template. You can either choose an existing template from the [**Recommended**](https://cloud.vast.ai/templates/) list or create your own [custom template](https://docs.vast.ai/creating-a-custom-template).
+2.  Open Template Editor (Click on pencil icon on a template card). Scroll down until you see the **Disk Space (Container + Volume)** section. ![Volume settings](https://mintcdn.com/vastai-80aa3a82/1a9mKbP8zn3lYY0d/images/volumes-5.webp?fit=max&auto=format&n=1a9mKbP8zn3lYY0d&q=85&s=a05044602cb747bb9cc9713e13c523e1)
+3.  In this section, check the box **Add recommended volume settings**. Once selected, a new configuration area will appear where you can enter the **volume size** and specify the **installation path.** A default path is provided, but you can modify it if needed.
+4.  After filling in the volume details, click **Save&Use** or **Create&Use Template** to apply your changes and navigate to the Search page. Offers that support volumes will now display a volume badge showing the available volume size. You can adjust the volume size using the slider in the Search page after your template is configured. ![Volume settings](https://mintcdn.com/vastai-80aa3a82/1a9mKbP8zn3lYY0d/images/volumes-7.webp?fit=max&auto=format&n=1a9mKbP8zn3lYY0d&q=85&s=c70715c2f8c2ad95a6b154ddcaaa286a)
+5.  Select a GPU and click **Rent** button.
+
+### **How to view volume pricing?**
+
+To view pricing details, simply hover over the Rent button for any offer. ![](https://mintcdn.com/vastai-80aa3a82/1a9mKbP8zn3lYY0d/images/volumes-8.webp?fit=max&auto=format&n=1a9mKbP8zn3lYY0d&q=85&s=f0d07bb5a6cd540184f7e2498eb287ac)
+
+### Deleting volume
+
+To delete a volume, the instance it is attached to must be **deleted first**. Deleting a volume that is currently **mounted to a running or stopped instance is not allowed**. Delete a Volume:
+
+1.  Make sure the volume is **not attached** to any instance. If it is, **delete the instance** first from the Instances page.
+2.  Once the volume is detached, go to the **Storage** page.
+3.  Find the volume you want to delete, click on the **three-dot menu** (⋮) next to it, and select **“Delete volume”**.
+4.  Confirm the deletion. This action is **permanent** and cannot be undone.
+
+### How to create an instance with existing volume?
+
+If you already have a volume and want to launch a new instance using it, follow these steps:
+
+1.  Go to the **Storage** page and select the volume you want to use.
+2.  In the **Volume Info** section, you will see a button labeled **Rent instance using this volume**. ![Rent instance using this volume](https://mintcdn.com/vastai-80aa3a82/1a9mKbP8zn3lYY0d/images/volumes-10.webp?fit=max&auto=format&n=1a9mKbP8zn3lYY0d&q=85&s=8c4db1caeb318e91efe1850d0fdcacfc)
+3.  Click this button. You will be redirected to the **Search Page**, where available offers are automatically filtered to match the **same machine** where the volume is located.
+4.  Select your preferred offer and proceed to launch the instance. The selected volume will be automatically attached to the instance upon creation.
+
+## Creating a Volume in CLI
+
+To create a volume, you can use the vast CLI. See our [CLI documentation](https://cloud.vast.ai/cli/) for set-up and usage of the CLI. You can search for volume offers using the command:
+
+Text
+
+```
+vastai search volumes
+```
+
+There is a modified list of search params available, for more information, you can add the — help option to the search. This will bring up a list of available volume offers. You will be able to see the maximum capacity for the volume (in Gigabytes). Just like creating an instance, you can copy the offer ID and create a volume with the command:
+
+Text
+
+```
+  vastai create volume <offer_id> -s <volume_size> -n <name>
+```
+
+This will send a command to the host machine to allocate the given space to your volume. You can optionally specify a name with -n, it can be alphanumeric with underscores, with a max length of 64. If all goes well, you should be able to see your volume as created when you run the command
+
+Text
+
+```
+vastai show volumes
+```
+
+### How can I create an instance with a volume?
+
+Now that your volume is created, you can use it by creating an instance on the machine with the volume, and passing the volume in the env argument. The format is -v <volume\_name>:<mount\_point>, for example:
+
+Text
+
+```
+vastai create instance 874 --image pytorch/pytorch --env '-v V.881:/mnt' --disk 30 --ssh --direct
+```
+
+That command mounts your volume at the directory /mnt. The directory does not need to exist in order to be mounted.
+
+### Can I use my volume on a different machine?
+
+You can’t directly use the same volume on a different machine, but you can clone the volume to a machine that has an available volume contract.The clone command will create a new volume contract on the new machine, provision the volume, and copy all existing data from the existing volume to the new volume. To clone a volume, you can use the command:
+
+Text
+
+```
+vastai clone volume <existing_volume_id> <dest_contract_id>
+```
+
+where <dest\_contract\_id> is a volume offer of at least the size of your existing volume. The volumes are independent and do not sync data after the clone is completed. Any changes that occur (on either) volume AFTER the volume is successfully cloned will not be reflected on the other volume.
+
+### How can I delete my volume?
+
+When you’re done using it, you can delete your volume using the command
+
+Text
+
+```
+vastai delete volume <volume_id>
+```
+
+### How can I see what instances are using my volume?
+
+The command
+
+Text
+
+```
+vastai show volumes
+```
+
+will display a list of volumes you own, as well as what instances exist that are using that volume.
+
+## A machine with my volume went offline! Am I still being charged?
+
+Just like with normal instances, you are never charged when a machine is offline. This is usually a temporary issue, and when the machine comes back online, volume charges will resume as normal. If you wish to delete the volume in the meantime, you can do so, and you will not be charged when the machine comes back online. If the machine is offline for an extended period of time, please reach out to vast support.
+
+## Can I use my volume with a VM instance?
+
+At this time, volumes are only supported for docker instances, and cannot be used with VM instances.

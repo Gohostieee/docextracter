@@ -1,0 +1,80 @@
+# vLLM (LLM inference and serving) - Vast.ai Documentation – Affordable GPU Cloud Marketplace
+
+**URL:** https://docs.vast.ai/vllm-llm-inference-and-serving
+
+---
+
+Below is a guide for runing the [vLLM template](https://cloud.vast.ai/?creator_id=62897&name=vLLM) on Vast. The template contains everything you need to get started, so you will only need to specify the model you want to serve and the corresponding vLLM configuration. For simplicity, we have set the default template model as [DeepSeek-R1-Distill-Llama-8B](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Llama-8B) with a limited context window because it can run on a single GPU with only 21GB VRAM, but vLLM can scale easily over multiple GPUs to handle much larger models.
+
+## Set Up Your Account
+
+1.  **Setup your Vast account and add credit:** Review the [quickstart guide](https://docs.vast.ai/quickstart) to get familar with the service if you do not have an account with credits loaded.
+
+## Configure the vLLM Template
+
+vLLM serve is launched automatically by the template and it will use the configuration defined in the environment variables `VLLM_MODEL` and `VLLM_ARGS`. Here’s how you can set it up
+
+1.  Vist the [templates](https://cloud.vast.ai/templates/) page and find the recommended vLLM template.
+2.  Click the pencil button to open up the template editor.
+3.  If you would like to run a model other than the default, edit the `VLLM_MODEL`environment variable. The default value is `deepseek-ai/DeepSeek-R1-Distill-Llama-8B` which is a HuggingFace repository.
+4.  You can also set the arguments to pass to `vllm serve` by modifying the `VLLM_ARGS` environment variable. vLLM is highly configurable so it’s a good idea to check the official documentation before changing anything here. All available startup arguments are listed in the [official vLLM documentation](https://docs.vllm.ai/en/latest/serving/engine_args.html).
+5.  Save the template. You will be able to find the version you have just modified in the templates page in the ‘My Templates’ section.
+
+## Launch Your Instance
+
+1.  **Select the template** you just saved from the ‘My Templates’ section of the templates page.
+2.  Click the **Play icon** on this template to be taken to view the available offers.
+3.  Use the search filters to select a suitable GPU, ensuring that you have **sufficient VRAM** to load all of the model’s layers to GPU.
+4.  From the search menu, ensure you have **sufficient disk space** for the model you plan to run. The disk slider is located under the template icon on the left hand column. Large models (e.g., 70B parameters) can require dozens of gigabytes of storage. For Deep Seek R1 8B, make sure to allocate over 17Gb of disk space using the slider.
+5.  Click **Rent** on a suitable instance and wait for it to load
+
+Once the instance has loaded you’ll be able to click the Open button to access the instance portal where you’ll see links to the interactive vLLM API documentation and the Ray control panel. As vLLM must download your model upon first run it may take some time before the API is available. You can follow the startup progress in the instance logs.
+
+## vLLM API Usage
+
+The vLLM API can be accessed programmatically at:
+
+Bash
+
+```
+https://INSTANCE_IP:PORT_8000
+```
+
+### Authentication Token
+
+*   When making requests, you must include an **Authorization** header with the token value of OPEN\_BUTTON\_TOKEN.
+
+### Sample Curl Command
+
+Bash
+
+```
+ curl -k https://INSTANCE_IP:EXTERNAL_PORT/v1/completions \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer 7b040f8d37017016a336a804a8039068d7c744850f3a441db48d6da559379058" \
+     -d '{
+        "model": "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
+        "prompt": "San Francisco is a",
+        "max_tokens": 128,
+        "temperature": 0.6
+      }'
+```
+
+*   \-k: Allows curl to perform insecure SSL connections and transfers as Vast.ai uses a self-signed certificate.
+*   Replace **INSTANCE\_IP** and **EXTERNAL\_PORT** with the externally mapped port for 8000 from the IP button on the instance.
+*   Update the Authorization header value to match your **OPEN\_BUTTON\_TOKEN**. You can get that from any of the links in the Instance Portal or from the Open button on the instance card.
+*   Modify the prompt, model, and other fields (max\_tokens, temperature, etc.) as needed.
+
+## vLLM with Python
+
+Although the instance starts the vllm serve function to provide an inference API, the template has been configured with Jupyter and SSH access so you can also interact with vLLM in code from your instance. To do this simply include the vllm modules at the top of your Python script:
+
+Python
+
+```
+from vllm import LLM, SamplingParams
+```
+
+## Further Reading
+
+Please see the template Readme file on our recommended vLLM template for advanced template configuration and other methods of connecting to and interacting with your instance.
