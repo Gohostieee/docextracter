@@ -31,8 +31,12 @@ globalThis.__progressStore = progressStore;
 // Filesystem-backed persistence to ensure cross-process visibility
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 
-const PROGRESS_DIR = path.join(process.cwd(), 'server', 'generated', 'progress');
+// Use /tmp in production (serverless) or local directory in development
+const PROGRESS_DIR = process.env.NODE_ENV === 'production'
+  ? path.join(os.tmpdir(), 'docextract-progress')
+  : path.join(process.cwd(), 'server', 'generated', 'progress');
 
 function ensureProgressDir() {
   try {
@@ -49,7 +53,8 @@ function writeProgressToDisk(progress: ExtractionProgress) {
     ensureProgressDir();
     fs.writeFileSync(progressFilePath(progress.id), JSON.stringify(progress), 'utf8');
   } catch (e) {
-    console.error('[progress-store] Failed to write progress file:', e);
+    // Silently fail in production if disk writes aren't possible
+    // The in-memory store will still work for single-process scenarios
   }
 }
 
@@ -60,7 +65,6 @@ function readProgressFromDisk(id: string): ExtractionProgress | undefined {
     const data = fs.readFileSync(file, 'utf8');
     return JSON.parse(data) as ExtractionProgress;
   } catch (e) {
-    console.error('[progress-store] Failed to read progress file:', e);
     return undefined;
   }
 }
