@@ -1,6 +1,6 @@
-import puppeteer, { Browser, Page } from 'puppeteer';
-import puppeteerCore from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
+// Use dynamic imports to follow Vercel's Puppeteer guidance and avoid bundling heavy deps
+// Types are referenced from puppeteer-core to keep compile-time safety without forcing runtime imports
+import type { Browser, Page } from 'puppeteer-core';
 
 /**
  * Initialize a local Puppeteer browser instance
@@ -8,48 +8,48 @@ import chromium from '@sparticuz/chromium';
  * Works in both local and serverless (Vercel) environments
  */
 export async function initPuppeteer(): Promise<Browser> {
-  // Check if we're in a serverless environment (Vercel)
-  const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+  const isServerless = Boolean(
+    process.env.VERCEL_ENV || process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+  );
 
-  if (isServerless) {
-    // Use chromium from @sparticuz/chromium for serverless
-    try {
-      console.log('Initializing serverless Puppeteer with @sparticuz/chromium...');
-      console.log('Modules loaded, getting executable path...');
-      const execPath = await chromium.executablePath();
-      console.log('Chromium executable path:', execPath);
+  try {
+    if (isServerless) {
+      // Serverless (Vercel): puppeteer-core + @sparticuz/chromium per official guide
+      // Ref: https://vercel.com/guides/deploying-puppeteer-with-nextjs-on-vercel
+      const chromium = (await import('@sparticuz/chromium')).default;
+      const puppeteerCore = await import('puppeteer-core');
 
-      console.log('Launching browser with args:', chromium.args);
       const browser = await puppeteerCore.launch({
-        args: chromium.args,
-        executablePath: execPath,
         headless: true,
+        args: chromium.args,
+        executablePath: await chromium.executablePath(),
       });
 
       console.log('Serverless Puppeteer browser launched successfully');
-      return browser as Browser;
-    } catch (error) {
-      console.error('Failed to initialize serverless Puppeteer:', error);
-      console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
-      console.error('Error message:', error instanceof Error ? error.message : String(error));
-      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-      throw error;
+      return browser as unknown as Browser;
     }
+
+    // Local dev: full puppeteer (bundled Chrome) for convenience
+    const puppeteer = await import('puppeteer');
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--disable-gpu',
+      ],
+    });
+
+    return browser as unknown as Browser;
+  } catch (error) {
+    console.error('Failed to initialize Puppeteer:', error);
+    console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
+    console.error('Error message:', error instanceof Error ? error.message : String(error));
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    throw error;
   }
-
-  // Local environment - use regular puppeteer
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--disable-gpu',
-    ],
-  });
-
-  return browser;
 }
 
 /**
