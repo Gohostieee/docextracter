@@ -241,6 +241,7 @@ export async function POST(request: NextRequest) {
   // Check authentication - handle both web and CLI requests
   let authResult = await auth();
   let userId = authResult.userId;
+  let isApiTokenAuth = false;
 
   // If no userId from cookies, check for Bearer token (CLI authentication with permanent API tokens)
   if (!userId) {
@@ -253,6 +254,7 @@ export async function POST(request: NextRequest) {
 
       if (tokenResult) {
         userId = tokenResult.userId;
+        isApiTokenAuth = true;
         console.log(`[CLI Auth] Authenticated user ${userId} via API token ${tokenResult.tokenId}`);
       } else {
         console.error('[CLI Auth] Invalid API token provided');
@@ -278,8 +280,14 @@ export async function POST(request: NextRequest) {
   // The user must have the 'extracter' feature
   let hasExtractorFeature = false;
 
+  // If authenticated via API token, grant access (API tokens are only given to authorized users)
+  if (isApiTokenAuth) {
+    hasExtractorFeature = true;
+    console.log('[CLI Auth] Granting access via API token authentication');
+  }
+
   // Try to check subscription from web auth first
-  if (authResult.has) {
+  if (!hasExtractorFeature && authResult.has) {
     hasExtractorFeature = authResult.has({ feature: 'extracter' });
   }
 
