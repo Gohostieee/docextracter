@@ -22,7 +22,7 @@ program
   .command('extract <url>')
   .description('Extract documentation from a URL')
   .option('-o, --output <path>', 'Output directory path (relative to current directory)', './docs')
-  .option('-s, --server <url>', 'Server URL', 'https://docextract.webv1.com/api')
+  .option('-s, --server <url>', 'Server URL', 'https://docextract.webv1.com')
   .action(async (url, options) => {
     try {
       console.log(chalk.blue.bold('\n📚 DocExtractor\n'));
