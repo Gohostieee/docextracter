@@ -1,4 +1,6 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
+import puppeteerCore from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 
 /**
  * Initialize a local Puppeteer browser instance
@@ -12,19 +14,26 @@ export async function initPuppeteer(): Promise<Browser> {
   if (isServerless) {
     // Use chromium from @sparticuz/chromium for serverless
     try {
-      const chromium = await import('@sparticuz/chromium');
-      const puppeteerCore = await import('puppeteer-core');
+      console.log('Initializing serverless Puppeteer with @sparticuz/chromium...');
+      console.log('Modules loaded, getting executable path...');
+      const execPath = await chromium.executablePath();
+      console.log('Chromium executable path:', execPath);
 
-      const browser = await puppeteerCore.default.launch({
-        args: [...chromium.default.args, '--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: await chromium.default.executablePath(),
+      console.log('Launching browser with args:', chromium.args);
+      const browser = await puppeteerCore.launch({
+        args: chromium.args,
+        executablePath: execPath,
         headless: true,
       });
 
+      console.log('Serverless Puppeteer browser launched successfully');
       return browser as Browser;
     } catch (error) {
       console.error('Failed to initialize serverless Puppeteer:', error);
-      throw new Error('Puppeteer initialization failed in serverless environment. Make sure @sparticuz/chromium and puppeteer-core are installed.');
+      console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
+      console.error('Error message:', error instanceof Error ? error.message : String(error));
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      throw error;
     }
   }
 
