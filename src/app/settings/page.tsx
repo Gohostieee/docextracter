@@ -164,7 +164,7 @@ export default function SettingsPage() {
           <p className="text-[#a39282]">Manage your API configuration</p>
         </div>
 
-        {/* API Key Section */}
+        {/* Self-Hosting Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -175,70 +175,33 @@ export default function SettingsPage() {
               <Key className="w-6 h-6 text-[#c97a63]" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#f4ede1]">OpenAI API Key</h2>
-              <p className="text-sm text-[#a39282]">Use your own API key to extract docs for free</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="api-key" className="text-[#a39282]">
-                API Key
-              </Label>
-              <div className="relative mt-2">
-                <Input
-                  id="api-key"
-                  type={showKey ? "text" : "password"}
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="sk-..."
-                  className="bg-[#1b1917] border-white/15 text-[#f4ede1] pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowKey(!showKey)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a39282] hover:text-[#f4ede1]"
-                >
-                  {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              <p className="text-xs text-[#a39282] mt-2">
-                Your API key is stored locally in your browser and never sent to our servers.
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                onClick={handleSave}
-                className="bg-gradient-to-r from-[#b08968] to-[#8c6a4a] hover:from-[#9b7b58] hover:to-[#75583e] text-[#0e0d0b] font-semibold"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                {saved ? "Saved!" : "Save API Key"}
-              </Button>
-              {apiKey && (
-                <Button
-                  onClick={handleClear}
-                  variant="outline"
-                  className="border-red-500/40 text-red-400 hover:bg-red-500/20 hover:border-red-500/60"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Clear
-                </Button>
-              )}
+              <h2 className="text-xl font-bold text-[#f4ede1]">Self-Hosting</h2>
+              <p className="text-sm text-[#a39282]">Run DocExtract on your own infrastructure for free</p>
             </div>
           </div>
 
           {/* Info Box */}
-          <div className="mt-6 p-4 bg-[#7f8c5a]/10 border border-[#7f8c5a]/20 rounded-xl">
-            <h3 className="text-sm font-semibold text-[#f4ede1] mb-2">How to get an OpenAI API Key:</h3>
+          <div className="p-4 bg-[#7f8c5a]/10 border border-[#7f8c5a]/20 rounded-xl">
+            <h3 className="text-sm font-semibold text-[#f4ede1] mb-2">How to self-host DocExtract:</h3>
             <ol className="text-sm text-[#a39282] space-y-1 list-decimal list-inside">
-              <li>Go to <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-[#b08968] hover:text-[#c97a63] underline">platform.openai.com/api-keys</a></li>
-              <li>Create a new API key</li>
-              <li>Copy and paste it here</li>
+              <li>Clone the repository: <a href="https://github.com/Gohostieee/docextracter" target="_blank" rel="noopener noreferrer" className="text-[#b08968] hover:text-[#c97a63] underline">github.com/Gohostieee/docextracter</a></li>
+              <li>Follow the setup instructions in the README</li>
+              <li>Deploy to your preferred hosting platform (Vercel, Railway, etc.)</li>
+              <li>Use your own OpenAI API key in the environment variables</li>
             </ol>
             <p className="text-xs text-[#a39282] mt-3">
-              <strong>Note:</strong> You'll be charged based on OpenAI's pricing when using your own key.
+              <strong>Note:</strong> Self-hosting gives you full control and you only pay for OpenAI API usage.
             </p>
+          </div>
+
+          <div className="mt-4">
+            <Button
+              onClick={() => window.open('https://github.com/Gohostieee/docextracter', '_blank')}
+              className="bg-gradient-to-r from-[#b08968] to-[#8c6a4a] hover:from-[#9b7b58] hover:to-[#75583e] text-[#0e0d0b] font-semibold w-full"
+            >
+              <Key className="w-4 h-4 mr-2" />
+              View on GitHub
+            </Button>
           </div>
         </motion.div>
 

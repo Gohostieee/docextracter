@@ -26,7 +26,6 @@ const extractSchema = z.object({
   guide: z.string().min(1, 'Guide is required'),
   jsr: z.boolean().optional().default(false), // JavaScript render flag
   aggressive: z.boolean().optional().default(false), // Aggressive rendering mode (only applies when jsr=true)
-  userApiKey: z.string().optional(), // Optional user-provided OpenAI API key
 });
 
 // Schema for AI response
@@ -128,8 +127,7 @@ async function fetchAndConvertToMarkdown(
 // Helper function to generate master catalog summary
 async function generateMasterSummary(
   pages: Array<{ url: string; title: string; markdown: string }>,
-  guide: string,
-  userApiKey?: string
+  guide: string
 ): Promise<{ summary: string; usage: { promptTokens: number; completionTokens: number; totalTokens: number } }> {
   // Combine all pages into a single catalog text
   let catalogText = '';
@@ -145,7 +143,7 @@ async function generateMasterSummary(
     catalogText = catalogText.slice(0, maxCatalogSize) + '\n\n[... Content truncated for length ...]';
   }
 
-  const provider = userApiKey ? createOpenAI({ apiKey: userApiKey }) : openai;
+  const provider = openai;
   const { text, usage } = await generateText({
     model: provider('gpt-5-nano'),
     prompt: `You are analyzing an entire documentation catalog. Generate a comprehensive summary of all the documentation pages provided below.
@@ -273,12 +271,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Parse the request body first to check for user API key
+  // Parse the request body
   const body = await request.json();
-  const hasUserApiKey = body.userApiKey && body.userApiKey.trim().length > 0;
 
   // Check subscription using Clerk's native billing (Beta)
-  // The user must have the 'extracter' feature OR provide their own API key
+  // The user must have the 'extracter' feature
   let hasExtractorFeature = false;
 
   // Try to check subscription from web auth first
@@ -302,12 +299,12 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  if (!hasExtractorFeature && !hasUserApiKey) {
+  if (!hasExtractorFeature) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Subscription or API key required',
-        message: 'You need an active subscription or provide your own OpenAI API key to use this service',
+        error: 'Subscription required',
+        message: 'You need an active subscription to use this service, or you can self-host for free at https://github.com/Gohostieee/docextracter',
       },
       { status: 403 }
     );
@@ -523,7 +520,7 @@ export async function POST(request: NextRequest) {
       const batchStart = Date.now();
       console.log(`  [Batch ${batchIndex + 1}/${linkBatches.length}] Starting AI filtering of ${batch.length} URLs...`);
 
-      const provider = validatedData.userApiKey ? createOpenAI({ apiKey: validatedData.userApiKey }) : openai;
+      const provider = openai;
       const { object, usage } = await generateObject({
         model: provider('gpt-5-nano'),
         schema: urlFilterSchema,
@@ -741,8 +738,7 @@ Return only the URLs that match the extraction guide criteria, along with your r
     const catalogPrepStart = Date.now();
     const { summary: masterSummaryText, usage: masterSummaryUsage } = await generateMasterSummary(
       processedPages,
-      validatedData.guide,
-      validatedData.userApiKey
+      validatedData.guide
     );
     const masterSummaryDuration = Date.now() - masterSummaryStart;
 

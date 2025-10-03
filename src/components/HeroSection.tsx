@@ -122,7 +122,7 @@ export function HeroSection({ isSignedIn, hasSubscription }: HeroSectionProps) {
             Upgrade to unlock extraction
           </p>
           <p className="text-gray-500 text-sm text-center">
-            Subscribe to get unlimited access — or use your own OpenAI API key for free
+            Subscribe to get unlimited access — or self-host for free
           </p>
           <div className="flex gap-3">
             <Button
@@ -132,11 +132,11 @@ export function HeroSection({ isSignedIn, hasSubscription }: HeroSectionProps) {
               Upgrade Now
             </Button>
             <Button
-              onClick={() => window.location.href = '/settings'}
+              onClick={() => window.open('https://github.com/Gohostieee/docextracter', '_blank')}
               variant="outline"
               className="border-[#b08968]/40 hover:text-[#f4ede1] hover:bg-[#b08968]/20 hover:border-[#b08968]/60"
             >
-              Add API Key
+              Self-Host
             </Button>
           </div>
         </motion.div>
