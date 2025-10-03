@@ -378,7 +378,7 @@ export async function POST(request: NextRequest) {
 
     // Use Puppeteer if JSR flag is true
     if (validatedData.jsr) {
-      console.log('🎭 JSR flag enabled - using local Puppeteer...');
+      console.log('🎭 JSR flag enabled - using Puppeteer...');
       usedBrowser = true;
 
       const browserInitStart = Date.now();

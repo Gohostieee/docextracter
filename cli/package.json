@@ -1,6 +1,6 @@
 {
   "name": "docextract-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CLI tool for extracting documentation using AI-powered web scraping",
   "main": "src/index.js",
   "type": "module",

@@ -37,12 +37,9 @@ export default function HomeClient({ isSignedIn, hasSubscription }: HomeClientPr
       return;
     }
 
-    // Get user's API key from localStorage
-    const userApiKey = typeof window !== 'undefined' ? localStorage.getItem('openai_api_key') : null;
-
-    // Check if user has subscription OR their own API key
-    if (!hasSubscription && !userApiKey) {
-      setError('Please subscribe or add your own OpenAI API key in settings to use the extraction feature');
+    // Check if user has subscription
+    if (!hasSubscription) {
+      setError('Please subscribe to use the extraction feature, or self-host for free');
       setViewState('error');
       return;
     }
@@ -70,7 +67,6 @@ export default function HomeClient({ isSignedIn, hasSubscription }: HomeClientPr
         guide,
         jsr,
         aggressive,
-        userApiKey: userApiKey || undefined,
       }, {
         responseType: 'blob',
         headers: {
@@ -241,12 +237,13 @@ export default function HomeClient({ isSignedIn, hasSubscription }: HomeClientPr
           onAggressiveChange={setAggressive}
           onSubmit={handleSubmit}
           isLoading={viewState === 'loading'}
-          isDisabled={!isSignedIn || (!hasSubscription && typeof window !== 'undefined' && !localStorage.getItem('openai_api_key'))}
-          disabledMessage={!isSignedIn ? "Sign in to extract docs" : "Subscribe or add API key in settings"}
+          isDisabled={!isSignedIn || !hasSubscription}
+          disabledMessage={!isSignedIn ? "Sign in to extract docs" : "Subscribe or self-host to extract docs"}
         />
       </div>
     </div>
   );
 }
+
 
 

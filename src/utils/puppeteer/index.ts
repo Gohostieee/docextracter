@@ -3,8 +3,33 @@ import puppeteer, { Browser, Page } from 'puppeteer';
 /**
  * Initialize a local Puppeteer browser instance
  * Used when JSR (JavaScript Render) flag is true
+ * Works in both local and serverless (Vercel) environments
  */
 export async function initPuppeteer(): Promise<Browser> {
+  // Check if we're in a serverless environment (Vercel)
+  const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+  if (isServerless) {
+    // Use chromium from @sparticuz/chromium for serverless
+    try {
+      const chromium = await import('@sparticuz/chromium');
+      const puppeteerCore = await import('puppeteer-core');
+
+      const browser = await puppeteerCore.default.launch({
+        args: chromium.default.args,
+        defaultViewport: chromium.default.defaultViewport,
+        executablePath: await chromium.default.executablePath(),
+        headless: chromium.default.headless,
+      });
+
+      return browser as Browser;
+    } catch (error) {
+      console.error('Failed to initialize serverless Puppeteer:', error);
+      throw new Error('Puppeteer initialization failed in serverless environment. Make sure @sparticuz/chromium and puppeteer-core are installed.');
+    }
+  }
+
+  // Local environment - use regular puppeteer
   const browser = await puppeteer.launch({
     headless: true,
     args: [
@@ -216,5 +241,6 @@ export async function fetchHTMLWithPuppeteer(
     await page.close();
   }
 }
+
 
 
