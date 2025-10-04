@@ -37,7 +37,7 @@ const urlFilterSchema = z.object({
 // Helper function to fetch and convert URL to markdown
 async function fetchAndConvertToMarkdown(
   url: string,
-  puppeteerBrowser?: import('puppeteer').Browser,
+  puppeteerBrowser?: import('playwright').Browser,
   aggressive: boolean = false
 ): Promise<{ markdown: string; title: string }> {
   let html: string;
@@ -280,10 +280,20 @@ export async function POST(request: NextRequest) {
   // The user must have the 'extracter' feature
   let hasExtractorFeature = false;
 
-  // If authenticated via API token, grant access (API tokens are only given to authorized users)
+  // If authenticated via API token, check if they should have access
+  // For now, grant access to all API token users (self-hosted scenario)
+  // TODO: Add subscription check for hosted service if needed
   if (isApiTokenAuth) {
+    // Option 1 (current): Allow all API token users (good for self-hosted)
     hasExtractorFeature = true;
     console.log('[CLI Auth] Granting access via API token authentication');
+
+    // Option 2 (future): Check subscription for hosted users
+    // const isSelfHosted = !process.env.VERCEL_ENV || process.env.SELF_HOSTED === 'true';
+    // if (isSelfHosted) {
+    //   hasExtractorFeature = true;
+    // }
+    // Otherwise fall through to subscription check below
   }
 
   // Try to check subscription from web auth first
@@ -331,8 +341,8 @@ export async function POST(request: NextRequest) {
     totalTokens: 0,
   };
 
-  // Puppeteer browser instance (declared here so it's accessible in catch block)
-  let puppeteerBrowser: import('puppeteer').Browser | null = null;
+  // Browserbase browser instance (declared here so it's accessible in catch block)
+  let puppeteerBrowser: import('playwright').Browser | null = null;
 
   // Create progress tracker
   createProgress(progressId);
@@ -384,19 +394,19 @@ export async function POST(request: NextRequest) {
     let links: string[] = [];
     let usedBrowser = false;
 
-    // Use Puppeteer if JSR flag is true
+    // Use Browserbase if JSR flag is true
     if (validatedData.jsr) {
-      console.log('🎭 JSR flag enabled - using Puppeteer...');
+      console.log('🎭 JSR flag enabled - using Browserbase...');
       usedBrowser = true;
 
       const browserInitStart = Date.now();
       puppeteerBrowser = await initPuppeteer();
-      console.log(`✓ Puppeteer initialized in ${Date.now() - browserInitStart}ms`);
+      console.log(`✓ Browserbase initialized in ${Date.now() - browserInitStart}ms`);
 
       const extractStart = Date.now();
       links = await extractLinksWithPuppeteer(puppeteerBrowser, validatedData.url);
       console.log(`✓ Links extracted in ${Date.now() - extractStart}ms`);
-      console.log(`✓ Found ${links.length} links via Puppeteer`);
+      console.log(`✓ Found ${links.length} links via Browserbase`);
 
     } else {
       // Use current behavior - try simple fetch first, fallback to browser if needed
@@ -480,7 +490,7 @@ export async function POST(request: NextRequest) {
     }
 
     const linkExtractionDuration = Date.now() - linkExtractionStart;
-    const extractionMethod = validatedData.jsr ? 'Puppeteer (JSR)' : (usedBrowser ? 'browser' : 'HTTP fetch');
+    const extractionMethod = validatedData.jsr ? 'Browserbase (JSR)' : (usedBrowser ? 'browser' : 'HTTP fetch');
     console.log(`✓ Link extraction complete in ${linkExtractionDuration}ms (method: ${extractionMethod})`);
 
     addProgressUpdate(progressId, {
@@ -863,12 +873,12 @@ Return only the URLs that match the extraction guide criteria, along with your r
     console.log(`Step 7 (Doc Creation): ${docCreationDuration}ms (${((docCreationDuration/totalDuration)*100).toFixed(1)}%)`);
     console.log(`Step 8 (ZIP Creation): ${zipDuration}ms (${((zipDuration/totalDuration)*100).toFixed(1)}%)`);
 
-    // Clean up Puppeteer browser if it was used
+    // Clean up Browserbase browser if it was used
     if (puppeteerBrowser) {
       const cleanupStart = Date.now();
-      console.log('\n--- Cleaning up Puppeteer browser ---');
+      console.log('\n--- Cleaning up Browserbase browser ---');
       await puppeteerBrowser.close();
-      console.log(`✓ Puppeteer browser closed in ${Date.now() - cleanupStart}ms`);
+      console.log(`✓ Browserbase browser closed in ${Date.now() - cleanupStart}ms`);
     }
 
     // Mark as complete
@@ -902,13 +912,13 @@ Return only the URLs that match the extraction guide criteria, along with your r
       },
     });
   } catch (error) {
-    // Clean up Puppeteer browser if it was used
+    // Clean up Browserbase browser if it was used
     if (puppeteerBrowser) {
       try {
         await puppeteerBrowser.close();
-        console.log('✓ Puppeteer browser cleaned up after error');
+        console.log('✓ Browserbase browser cleaned up after error');
       } catch (cleanupError) {
-        console.error('Failed to cleanup Puppeteer browser:', cleanupError);
+        console.error('Failed to cleanup Browserbase browser:', cleanupError);
       }
     }
     console.error('\n=== EXTRACTION ERROR ===');
